@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binance Gift Access</title>
+    <style>
+        :root {
+            --binance-yellow: #FCD535;
+            --bg-color: #121213;
+            --card-bg: #1e2023;
+            --text-gray: #848e9c;
+            --error-red: #f6465d;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Pantalla de Bloqueo */
+        #lock-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .lock-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 320px;
+        }
+
+        input[type="text"] {
+            background: #2b2f36;
+            border: 1px solid #474d57;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            margin: 15px 0;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+
+        /* Interfaz Principal (Oculta al inicio) */
+        #main-content {
+            display: none;
+            width: 90%;
+            max-width: 400px;
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+
+        .expiry-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 12px;
+            color: var(--binance-yellow);
+            background: rgba(252, 213, 53, 0.1);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .binance-logo {
+            color: var(--binance-yellow);
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            font-size: 0.95rem;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .highlight { color: white; font-weight: 600; }
+
+        .btc-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 15px 0 5px 0;
+            color: white;
+        }
+
+        .conversions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+        }
+
+        .conv-item span { display: block; font-size: 0.8rem; color: var(--text-gray); }
+        .conv-item strong { font-size: 1rem; color: #f0f0f0; }
+
+        .btn {
+            background-color: var(--binance-yellow);
+            color: #000;
+            border: none;
+            padding: 16px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.9; }
+
+        .install-link {
+            display: none;
+            text-decoration: none;
+            background-color: transparent;
+            border: 1px solid var(--binance-yellow);
+            color: var(--binance-yellow);
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #error-msg { color: var(--error-red); font-size: 0.8rem; margin-top: 5px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="lock-screen">
+        <div class="lock-card">
+            <div class="binance-logo">BINANCE</div>
+            <p style="font-size: 0.9rem; color: var(--text-gray);">Ingrese el código de desbloqueo para ver su regalo</p>
+            <input type="text" id="access-code" placeholder="Código de 7 dígitos" maxlength="8">
+            <button class="btn" onclick="verifyCode()">Ver Regalo</button>
+            <p id="error-msg">Código incorrecto. Intente de nuevo.</p>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div class="expiry-tag">Expira en: <span id="timer">05:00</span></div>
+        
+        <div class="binance-logo" style="margin-top: 20px;">Binance Pay</div>
+        
+        <div class="user-info">
+            <span class="highlight">Antony123455wasqe</span> te ha enviado un regalo de criptomonedas
+        </div>
+
+        <div class="btc-amount">1.00 BTC</div>
+
+        <div class="conversions">
+            <div class="conv-item">
+                <span>Monto en USD</span>
+                <strong id="usd-price">$94,250.00</strong>
+            </div>
+            <div class="conv-item">
+                <span>Monto en PEN</span>
+                <strong id="pen-price">S/ 353,437.50</strong>
+            </div>
+        </div>
+
+        <button class="btn" id="withdraw-btn">Retirar</button>
+        
+        <a href="https://play.google.com/store/apps/details?id=com.binance.dev&hl=es_PE" 
+           target="_blank" 
+           id="install-btn" 
+           class="install-link">
+            Instalar Binance
+        </a>
+    </div>
+
+    <script>
+        // --- Configuración ---
+        const SECRET_CODE = "159P875";
+        const BTC_VAL_USD = 94250.00; // Puedes ajustar el precio actual
+        const USD_TO_PEN = 3.75;
+
+        // --- Temporizador de 5 minutos ---
+        let totalSeconds = 300;
+        const timerLabel = document.getElementById('timer');
+
+        const interval = setInterval(() => {
+            let mins = Math.floor(totalSeconds / 60);
+            let secs = totalSeconds % 60;
+            timerLabel.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            if (totalSeconds <= 0) {
+                clearInterval(interval);
+                timerLabel.textContent = "EXPIRADO";
+                document.getElementById('withdraw-btn').disabled = true;
+                document.getElementById('withdraw-btn').style.opacity = "0.5";
+            }
+            totalSeconds--;
+        }, 1000);
+
+        // --- Lógica de Acceso ---
+        function verifyCode() {
+            const input = document.getElementById('access-code').value.trim();
+            const error = document.getElementById('error-msg');
+            
+            if (input === SECRET_CODE) {
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                // Calculamos precios al entrar
+                document.getElementById('usd-price').textContent = `$${BTC_VAL_USD.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('pen-price').textContent = `S/ ${(BTC_VAL_USD * USD_TO_PEN).toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+            } else {
+                error.style.display = 'block';
+                document.getElementById('access-code').value = "";
+            }
+        }
+
+        // --- Lógica de Retiro ---
+        const withdrawBtn = document.getElementById('withdraw-btn');
+        const installBtn = document.getElementById('install-btn');
+
+        withdrawBtn.addEventListener('click', () => {
+            withdrawBtn.style.display = 'none';
+            installBtn.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
